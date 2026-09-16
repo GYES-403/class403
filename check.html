@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔓 403 訂正通關號碼表 🔓</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .icon-unlock {
+            font-size: 2.2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        /* 控制列 */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .selector-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select, input, button {
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export { background-color: #e67e22; }
+        .btn-daily-csv { background-color: #8e44ad; }
+        .btn-backup { background-color: #27ae60; }
+        .btn-restore { background-color: #2980b9; }
+        .btn-clear { background-color: #3498db; }
+        .btn-reset-score { background-color: #e74c3c; }
+
+        /* 分組容器與網格 */
+        .group-section {
+            margin-bottom: 25px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .group-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 5px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .student-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            user-select: none;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .student-card:hover {
+            border-color: var(--primary);
+        }
+
+        .student-card .click-area {
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .student-card .num {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .student-card .score {
+            font-size: 0.95rem;
+            color: #e67e22;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+
+        /* 調整按鈕與選單 */
+        .card-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-mini {
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            background-color: #bdc3c7;
+            color: #333;
+        }
+
+        .group-select-mini {
+            padding: 2px 4px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        /* 完成狀態 (劃掉 + 慶祝貼圖) */
+        .student-card.completed {
+            background-color: #e8f8f5;
+            border-color: var(--success);
+        }
+
+        .student-card.completed .num {
+            text-decoration: line-through;
+            color: #95a5a6;
+        }
+
+        .student-card.completed::after {
+            content: "🥳";
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 1.2rem;
+        }
+
+        /* 匯出區 */
+        .export-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff8e7;
+            border-left: 5px solid #f1c40f;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .export-area h3 { margin: 0 0 8px 0; color: #d35400; }
+
+        /* 設定區 */
+        .settings-panel {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 1px dashed #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><span class="icon-unlock">🔓</span> 403 訂正通關號碼表 <span class="icon-unlock">🔓</span></h1>
+
+    <!-- 頂部控制列：日期、科目切換與功能 -->
+    <div class="controls">
+        <div class="selector-group">
+            <div>
+                <label for="dateSelect"><b>📅 日期：</b></label>
+                <select id="dateSelect" onchange="switchDate()"></select>
+            </div>
+            <div>
+                <label for="subjectSelect"><b>📖 科目/作業：</b></label>
+                <select id="subjectSelect" onchange="switchSubject()">
+                    <option value="國預">國預</option>
+                    <option value="國甲">國甲</option>
+                    <option value="國乙">國乙</option>
+                    <option value="國作">國作</option>
+                    <option value="國考本">國考本</option>
+                    <option value="數課">數課</option>
+                    <option value="數習">數習</option>
+                    <option value="數作">數作</option>
+                    <option value="聯絡簿數單">聯絡簿數單</option>
+                    <option value="聯絡簿國形">聯絡簿國形</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn-export" onclick="exportUnfinished()">📋 匯出單項缺交</button>
+            <button class="btn-daily-csv" onclick="exportDailySummaryCSV()">📊 匯出當日全科缺交 CSV</button>
+            <button class="btn-backup" onclick="backupData()">📦 備份</button>
+            <button class="btn-restore" onclick="triggerRestore()">📥 還原</button>
+            <button class="btn-clear" onclick="resetCurrentSubject()">🔄 重置本頁</button>
+            <button class="btn-reset-score" onclick="resetAllScores()">⭐ 分數歸零</button>
+            <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+        </div>
+    </div>
+
+    <!-- 按組別排列的號碼區域 -->
+    <div id="groupsContainer"></div>
+
+    <!-- 匯出未完成名單區 -->
+    <div class="export-area" id="exportArea">
+        <h3 id="exportTitle">尚未完成名單</h3>
+        <p id="exportList" style="font-size: 1.1rem; font-weight: bold; color: #c0392b;"></p>
+    </div>
+
+    <!-- 教師設定區 -->
+    <div class="settings-panel">
+        <h3>⚙️ 教師管理選單</h3>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+            <div>
+                <label>新增作業名稱：</label>
+                <input type="text" id="newSubjectInput" placeholder="例如：自然學習單">
+                <button onclick="addSubject()">+ 新增項目</button>
+            </div>
+            <div>
+                <label>重置預設組別：</label>
+                <button onclick="resetToDefaultGroups()">⚠️ 恢復原始5組設定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 預設 5 組名單與專屬順序
+    const initialGroups = {
+        1: [11, 6, 20, 8],
+        2: [14, 3, 10, 4],
+        3: [7, 13, 2, 19],
+        4: [18, 15, 9, 16],
+        5: [12, 17, 21, 5]
+    };
+
+    // 115學年度國定假日 (YYYY-MM-DD)
+    const holidays = ["2026-09-25", "2026-10-10", "2027-01-01"];
+
+    let currentDate = "";
+    let currentSubject = '國預';
+    let studentData = {};
+    let groupOrders = {};
+
+    // 初始化日期下拉選單 (115/9/17 起算，自動排掉假日)
+    function initDateSelector() {
+        const select = document.getElementById('dateSelect');
+        select.innerHTML = '';
+
+        let startDate = new Date(2026, 8, 17); // 2026-09-17
+        let endDate = new Date(2027, 0, 20);   // 2027-01-20
+        
+        let todayStr = getFormattedDate(new Date());
+        let defaultSet = false;
+
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            let dayOfWeek = d.getDay();
+            let dateStr = getFormattedDate(d);
+
+            if (dayOfWeek === 0 || dayOfWeek === 6 || holidays.includes(dateStr)) {
+                continue;
+            }
+
+            let option = document.createElement('option');
+            option.value = dateStr;
+            
+            let twYear = d.getFullYear() - 1911;
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let date = String(d.getDate()).padStart(2, '0');
+            let dayNames = ["日", "一", "二", "三", "四", "五", "六"];
+            option.innerText = `${twYear}/${month}/${date} (${dayNames[dayOfWeek]})`;
+
+            select.appendChild(option);
+
+            if (dateStr === todayStr) {
+                select.value = dateStr;
+                defaultSet = true;
+            }
+        }
+
+        if (!defaultSet && select.options.length > 0) {
+            select.selectedIndex = 0;
+        }
+
+        currentDate = select.value;
+    }
+
+    function getFormattedDate(dateObj) {
+        let y = dateObj.getFullYear();
+        let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        let d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function saveData() {
+        localStorage.setItem('403_studentData_v3', JSON.stringify(studentData));
+        localStorage.setItem('403_groupOrders_v3', JSON.stringify(groupOrders));
+        localStorage.setItem('403_currentSubject_v3', currentSubject);
+        
+        const select = document.getElementById('subjectSelect');
+        const subjects = Array.from(select.options).map(opt => opt.value);
+        localStorage.setItem('403_subjects_v3', JSON.stringify(subjects));
+    }
+
+    function loadData() {
+        const savedData = localStorage.getItem('403_studentData_v3');
+        const savedOrders = localStorage.getItem('403_groupOrders_v3');
+        const savedSubject = localStorage.getItem('403_currentSubject_v3');
+        const savedSubjects = localStorage.getItem('403_subjects_v3');
+
+        if (savedSubjects) {
+            const select = document.getElementById('subjectSelect');
+            select.innerHTML = '';
+            JSON.parse(savedSubjects).forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.innerText = sub;
+                select.appendChild(opt);
+            });
+        }
+
+        if (savedSubject) {
+            currentSubject = savedSubject;
+            document.getElementById('subjectSelect').value = currentSubject;
+        }
+
+        if (savedData && savedOrders) {
+            studentData = JSON.parse(savedData);
+            groupOrders = JSON.parse(savedOrders);
+        } else {
+            initData();
+        }
+    }
+
+    function initData() {
+        studentData = {};
+        groupOrders = JSON.parse(JSON.stringify(initialGroups));
+        
+        for (let g = 1; g <= 5; g++) {
+            initialGroups[g].forEach(num => {
+                studentData[num] = {
+                    group: g,
+                    score: 0,
+                    records: {} // 結構: records["2026-09-17_國預"] = true/false
+                };
+            });
+        }
+    }
+
+    function renderGroups() {
+        const container = document.getElementById('groupsContainer');
+        container.innerHTML = '';
+
+        const currentGroups = {};
+        for (let num in studentData) {
+            const g = studentData[num].group;
+            if (!currentGroups[g]) currentGroups[g] = [];
+            currentGroups[g].push(parseInt(num));
+        }
+
+        const allGroupKeys = Object.keys(currentGroups).map(Number).sort((a,b) => a - b);
+        const recordKey = `${currentDate}_${currentSubject}`;
+
+        allGroupKeys.forEach(g => {
+            const groupSection = document.createElement('div');
+            groupSection.className = 'group-section';
+            
+            groupSection.innerHTML = `<div class="group-header">第 ${g} 組</div>`;
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid-container';
+
+            let displayList = [];
+            if (groupOrders[g]) {
+                displayList = groupOrders[g].filter(num => currentGroups[g].includes(num));
+                currentGroups[g].forEach(num => {
+                    if (!displayList.includes(num)) displayList.push(num);
+                });
+            } else {
+                displayList = currentGroups[g];
+            }
+            groupOrders[g] = displayList;
+
+            displayList.forEach(num => {
+                if (!studentData[num].records) studentData[num].records = {};
+                const isDone = studentData[num].records[recordKey] || false;
+                const card = document.createElement('div');
+                card.className = `student-card ${isDone ? 'completed' : ''}`;
+
+                card.innerHTML = `
+                    <div class="click-area" onclick="toggleStatus(${num})">
+                        <div class="num">${num} 號</div>
+                        <div class="score">⭐ ${studentData[num].score || 0} 分</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-mini" onclick="adjustScore(${num}, -1)">-1</button>
+                        <button class="btn-mini" onclick="adjustScore(${num}, 1)">+1</button>
+                        <select class="group-select-mini" onchange="changeGroup(${num}, this.value)">
+                            ${[1,2,3,4,5,6].map(i => `<option value="${i}" ${i == g ? 'selected' : ''}>第${i}組</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            groupSection.appendChild(grid);
+            container.appendChild(groupSection);
+        });
+
+        document.getElementById('exportArea').style.display = 'none';
+        saveData();
+    }
+
+    function toggleStatus(num) {
+        const recordKey = `${currentDate}_${currentSubject}`;
+        if (!studentData[num].records) studentData[num].records = {};
+
+        const currentStatus = studentData[num].records[recordKey] || false;
+        studentData[num].records[recordKey] = !currentStatus;
+
+        if (!currentStatus) {
+            studentData[num].score = (studentData[num].score || 0) + 1;
+        } else {
+            studentData[num].score = Math.max(0, (studentData[num].score || 0) - 1);
+        }
+        renderGroups();
+    }
+
+    function adjustScore(num, delta) {
+        studentData[num].score = Math.max(0, (studentData[num].score || 0) + delta);
+        renderGroups();
+    }
+
+    function changeGroup(num, newGroup) {
+        const oldGroup = studentData[num].group;
+        studentData[num].group = parseInt(newGroup);
+        
+        if (groupOrders[oldGroup]) {
+            groupOrders[oldGroup] = groupOrders[oldGroup].filter(n => n !== num);
+        }
+        if (!groupOrders[newGroup]) groupOrders[newGroup] = [];
+        groupOrders[newGroup].push(num);
+
+        renderGroups();
+    }
+
+    function switchDate() {
+        currentDate = document.getElementById('dateSelect').value;
+        renderGroups();
+    }
+
+    function switchSubject() {
+        currentSubject = document.getElementById('subjectSelect').value;
+        renderGroups();
+    }
+
+    function addSubject() {
+        const input = document.getElementById('newSubjectInput');
+        const name = input.value.trim();
+        if (!name) return alert('請輸入作業名稱！');
+
+        const select = document.getElementById('subjectSelect');
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.innerText = name;
+        select.appendChild(opt);
+        select.value = name;
+
+        currentSubject = name;
+        input.value = '';
+        renderGroups();
+    }
+
+    // 📋 匯出單項作業未完成號碼
+    function exportUnfinished() {
+        const unfinished = [];
+        const recordKey = `${currentDate}_${currentSubject}`;
+
+        for (let num in studentData) {
+            const isDone = studentData[num].records && studentData[num].records[recordKey];
+            if (!isDone) {
+                unfinished.push(`${num}號`);
+            }
+        }
+
+        unfinished.sort((a,b) => parseInt(a) - parseInt(b));
+
+        const exportArea = document.getElementById('exportArea');
+        const exportList = document.getElementById('exportList');
+        const exportTitle = document.getElementById('exportTitle');
+        const dateText = document.getElementById('dateSelect').selectedOptions[0].innerText;
+
+        exportTitle.innerText = `📌 【${dateText} - ${currentSubject}】未完成名單（共 ${unfinished.length} 人）：`;
+        
+        if (unfinished.length === 0) {
+            exportList.innerText = "🎉 太棒了！全班皆已完成！";
+            exportList.style.color = "#2ecc71";
+        } else {
+            exportList.innerText = unfinished.join('、 ');
+            exportList.style.color = "#c0392b";
+        }
+
+        exportArea.style.display = 'block';
+    }
+
+    // 📊 匯出當日所有作業缺交統計 CSV
+    function exportDailySummaryCSV() {
+        const selectSubject = document.getElementById('subjectSelect');
+        const subjects = Array.from(selectSubject.options).map(opt => opt.value);
+        const dateText = document.getElementById('dateSelect').selectedOptions[0].innerText;
+
+        let csvContent = `\uFEFF日期：,${dateText}\n`;
+        csvContent += "作業項目,缺交人數,缺交座號名單\n";
+
+        subjects.forEach(sub => {
+            const recordKey = `${currentDate}_${sub}`;
+            const unfinished = [];
+
+            for (let num in studentData) {
+                const isDone = studentData[num].records && studentData[num].records[recordKey];
+                if (!isDone) {
+                    unfinished.push(`${num}號`);
+                }
+            }
+
+            unfinished.sort((a,b) => parseInt(a) - parseInt(b));
+            const listStr = unfinished.length > 0 ? `"${unfinished.join('、 ')}"` : "全班繳齊";
+            csvContent += `${sub},${unfinished.length},${listStr}\n`;
+        });
+
+        downloadFile(`403當日作業缺交統計_${currentDate}.csv`, csvContent);
+    }
+
+    function downloadFile(filename, textContent) {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContent));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // 📦 備份
+    function backupData() {
+        const backupObj = {
+            studentData: studentData,
+            groupOrders: groupOrders,
+            subjects: Array.from(document.getElementById('subjectSelect').options).map(opt => opt.value)
+        };
+        downloadFile(`403作業追蹤備份_${getFormattedDate(new Date())}.json`, JSON.stringify(backupObj, null, 2));
+    }
+
+    // 📥 觸發與還原
+    function triggerRestore() {
+        document.getElementById('restoreFile').click();
+    }
+
+    function restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (confirm('確定要載入此備份嗎？這將會覆蓋當前電腦的紀錄！')) {
+                    if (imported.studentData) studentData = imported.studentData;
+                    if (imported.groupOrders) groupOrders = imported.groupOrders;
+                    if (imported.subjects) {
+                        const select = document.getElementById('subjectSelect');
+                        select.innerHTML = '';
+                        imported.subjects.forEach(sub => {
+                            const opt = document.createElement('option');
+                            opt.value = sub;
+                            opt.innerText = sub;
+                            select.appendChild(opt);
+                        });
+                    }
+                    saveData();
+                    renderGroups();
+                    alert('🎉 資料還原成功！');
+                }
+            } catch (err) {
+                alert('❌ 格式錯誤，請選擇正確的 JSON 備份檔！');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function resetCurrentSubject() {
+        const recordKey = `${currentDate}_${currentSubject}`;
+        if (confirm(`確定要重置【${currentDate} - ${currentSubject}】的劃線嗎？\n（恢復未完成狀態，但學生的累積分數會保留！）`)) {
+            for (let num in studentData) {
+                if (studentData[num].records) {
+                    studentData[num].records[recordKey] = false;
+                }
+            }
+            renderGroups();
+        }
+    }
+
+    function resetAllScores() {
+        if (confirm('確定要將全班的星星分數全部歸零嗎？')) {
+            for (let num in studentData) {
+                studentData[num].score = 0;
+            }
+            renderGroups();
+        }
+    }
+
+    function resetToDefaultGroups() {
+        if (confirm('確定要恢復為您預設的原始 5 組號碼與順序嗎？')) {
+            localStorage.clear();
+            initData();
+            renderGroups();
+        }
+    }
+
+    // 初始化執行
+    initDateSelector();
+    loadData();
+    renderGroups();
+</script>
+
+</body>
+</html>
