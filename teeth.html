@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🪥 403 潔牙守護神 🦷</title>
+    <style>
+        :root {
+            --primary: #2980b9;
+            --success: #27ae60;
+            --bg: #eef9bf;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 3px solid #74b9ff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .icon-bounce {
+            display: inline-block;
+            animation: floatSwing 2s infinite ease-in-out;
+        }
+
+        @keyframes floatSwing {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-8px) rotate(-10deg) scale(1.1); }
+            75% { transform: translateY(-4px) rotate(10deg) scale(1.05); }
+        }
+
+        /* 週二漱口水專屬提醒 Banner */
+        .tuesday-banner {
+            display: none;
+            background: #e1f5fe;
+            border: 2px dashed #0288d1;
+            color: #0277bd;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            background: #e1f5fe;
+            padding: 15px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: 2px dashed #81d4fa;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0277bd;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        select, button {
+            padding: 8px 14px;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            border: 1px solid #b3e5fc;
+            outline: none;
+        }
+
+        button {
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-export { background-color: #f39c12; }
+        .btn-month { background-color: #8e44ad; }
+        .btn-backup { background-color: #27ae60; }
+        .btn-restore { background-color: #2980b9; }
+        .btn-reset { background-color: #95a5a6; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        .student-card {
+            background: #fff;
+            border: 3px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 18px 10px;
+            text-align: center;
+            user-select: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        .student-card:hover {
+            border-color: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        .student-card .num {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .student-card .status-text {
+            font-size: 0.95rem;
+            color: #e74c3c;
+            margin-top: 6px;
+            font-weight: bold;
+        }
+
+        /* 完成潔牙狀態 (亮眼卡片 + 😁 圖示) */
+        .student-card.completed {
+            background-color: #fffde7;
+            border-color: #fbc02d;
+        }
+
+        .student-card.completed .num {
+            color: #f57f17;
+        }
+
+        .student-card.completed .status-text {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .student-card.completed::after {
+            content: "😁";
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 1.4rem;
+        }
+
+        .export-area {
+            margin-top: 25px;
+            padding: 18px;
+            background: #fff8e7;
+            border-left: 6px solid #f1c40f;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .export-area h3 { margin: 0 0 8px 0; color: #d35400; }
+
+        .summary-box {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #ffe082;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        <span class="icon-bounce">🪥</span> 
+        403 潔牙守護神 
+        <span class="icon-bounce">🦷</span>
+    </h1>
+
+    <!-- 週二漱口水特別提醒 -->
+    <div id="tuesdayBanner" class="tuesday-banner">
+        📢 今日加碼任務：請完成含氟漱口水！
+    </div>
+
+    <!-- 控制列 -->
+    <div class="controls">
+        <div class="date-selector">
+            <label for="dateSelect"><b>📅 守護日期：</b></label>
+            <select id="dateSelect" onchange="switchDate()"></select>
+        </div>
+        <div class="btn-group">
+            <button class="btn-export" onclick="exportDailyCSV()">📋 匯出日報表 CSV</button>
+            <button class="btn-month" onclick="exportMonthlyCSV()">📊 匯出月報表 CSV</button>
+            <button class="btn-backup" onclick="backupData()">📦 備份紀錄</button>
+            <button class="btn-restore" onclick="triggerRestore()">📥 還原紀錄</button>
+            <button class="btn-reset" onclick="resetCurrentDate()">🔄 重置今日</button>
+            <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+        </div>
+    </div>
+
+    <!-- 號碼展示區域 (依序 2~21 號) -->
+    <div class="grid-container" id="studentsContainer"></div>
+
+    <!-- 匯出與即時名單統計區 -->
+    <div class="export-area" id="exportArea">
+        <h3 id="exportTitle">每日潔牙統計</h3>
+        <div class="summary-box">
+            <p id="doneList" style="color: #27ae60; font-weight: bold; margin: 5px 0;"></p>
+            <p id="undoneList" style="color: #c0392b; font-weight: bold; margin: 5px 0;"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 依序產出 2 ~ 21 號名單 (全班 20 人)
+    const students = Array.from({length: 20}, (_, i) => i + 2);
+
+    // 115學年度第一學期 國定假日/彈性放假日清單 (YYYY-MM-DD)
+    const holidays = [
+        "2026-09-25", // 中秋節
+        "2026-10-10", // 國慶日
+        "2027-01-01"  // 元旦
+    ];
+
+    let currentDate = "";
+    let isTuesday = false;
+    let teethData = {}; 
+
+    // 初始化日期下拉選單 (從 115/9/17 開始，自動跳過週末與假日)
+    function initDateSelector() {
+        const select = document.getElementById('dateSelect');
+        select.innerHTML = '';
+
+        let startDate = new Date(2026, 8, 17); // 2026-09-17
+        let endDate = new Date(2027, 0, 20);   // 2027-01-20
+        
+        let todayStr = getFormattedDate(new Date());
+        let defaultSet = false;
+
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            let dayOfWeek = d.getDay();
+            let dateStr = getFormattedDate(d);
+
+            // 跳過週末 (0: 週日, 6: 週六) 與 國定假日
+            if (dayOfWeek === 0 || dayOfWeek === 6 || holidays.includes(dateStr)) {
+                continue;
+            }
+
+            let option = document.createElement('option');
+            option.value = dateStr;
+            
+            let twYear = d.getFullYear() - 1911;
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let date = String(d.getDate()).padStart(2, '0');
+            let dayNames = ["日", "一", "二", "三", "四", "五", "六"];
+            option.innerText = `${twYear}/${month}/${date} (${dayNames[dayOfWeek]})`;
+
+            select.appendChild(option);
+
+            if (dateStr === todayStr) {
+                select.value = dateStr;
+                defaultSet = true;
+            }
+        }
+
+        if (!defaultSet && select.options.length > 0) {
+            select.selectedIndex = 0;
+        }
+
+        currentDate = select.value;
+        checkTuesday();
+    }
+
+    function checkTuesday() {
+        const dateObj = new Date(currentDate);
+        isTuesday = (dateObj.getDay() === 2); // 2 表示星期二
+
+        const banner = document.getElementById('tuesdayBanner');
+        if (isTuesday) {
+            banner.style.display = 'block';
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+
+    function getFormattedDate(dateObj) {
+        let y = dateObj.getFullYear();
+        let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        let d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('403_teeth_guardian_data');
+        if (saved) {
+            teethData = JSON.parse(saved);
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('403_teeth_guardian_data', JSON.stringify(teethData));
+    }
+
+    function render() {
+        const container = document.getElementById('studentsContainer');
+        container.innerHTML = '';
+
+        if (!teethData[currentDate]) {
+            teethData[currentDate] = {};
+        }
+
+        students.forEach(num => {
+            const isDone = teethData[currentDate][num] || false;
+            const card = document.createElement('div');
+            card.className = `student-card ${isDone ? 'completed' : ''}`;
+            card.onclick = () => toggleStatus(num);
+
+            let statusLabel = isDone 
+                ? (isTuesday ? '已潔牙+漱口 🤩' : '已潔牙 🦷') 
+                : (isTuesday ? '未潔牙/漱口' : '尚未潔牙');
+
+            card.innerHTML = `
+                <div class="num">${num} 號</div>
+                <div class="status-text">${statusLabel}</div>
+            `;
+            container.appendChild(card);
+        });
+
+        updateSummaryArea();
+        saveData();
+    }
+
+    function toggleStatus(num) {
+        if (!teethData[currentDate]) teethData[currentDate] = {};
+        teethData[currentDate][num] = !teethData[currentDate][num];
+        render();
+    }
+
+    function switchDate() {
+        currentDate = document.getElementById('dateSelect').value;
+        checkTuesday();
+        render();
+    }
+
+    function updateSummaryArea() {
+        const done = [];
+        const undone = [];
+        const currentRecords = teethData[currentDate] || {};
+
+        students.forEach(num => {
+            if (currentRecords[num]) {
+                done.push(`${num}號`);
+            } else {
+                undone.push(`${num}號`);
+            }
+        });
+
+        const exportArea = document.getElementById('exportArea');
+        const exportTitle = document.getElementById('exportTitle');
+        const doneList = document.getElementById('doneList');
+        const undoneList = document.getElementById('undoneList');
+
+        const selectedText = document.getElementById('dateSelect').selectedOptions[0].innerText;
+        exportTitle.innerText = `📌 【${selectedText}】即時統計（完成 ${done.length} 人 / 未完成 ${undone.length} 人）：`;
+
+        doneList.innerText = `✅ 已完成：` + (done.length > 0 ? done.join('、 ') : '無');
+        undoneList.innerText = `❌ 未完成：` + (undone.length > 0 ? undone.join('、 ') : '全班皆已完成 🎉');
+
+        exportArea.style.display = 'block';
+    }
+
+    function downloadFile(filename, textContent) {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContent));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    function exportDailyCSV() {
+        const selectedText = document.getElementById('dateSelect').selectedOptions[0].innerText;
+        let csvContent = "\uFEFF座號,姓名/註記,潔牙狀態\n";
+        
+        const currentRecords = teethData[currentDate] || {};
+        students.forEach(num => {
+            const status = currentRecords[num] ? "已完成" : "未完成";
+            csvContent += `${num}號,,${status}\n`;
+        });
+
+        downloadFile(`403潔牙日報表_${currentDate}.csv`, csvContent);
+    }
+
+    function exportMonthlyCSV() {
+        const currentYearMonth = currentDate.substring(0, 7); 
+        const monthDates = Object.keys(teethData)
+            .filter(d => d.startsWith(currentYearMonth))
+            .sort();
+
+        if (monthDates.length === 0) {
+            alert('當月尚無任何紀錄！');
+            return;
+        }
+
+        let header = "\uFEFF座號";
+        monthDates.forEach(d => {
+            header += `,${d.substring(5)}`;
+        });
+        header += ",當月完成次數\n";
+
+        let csvContent = header;
+
+        students.forEach(num => {
+            let row = `${num}號`;
+            let doneCount = 0;
+            monthDates.forEach(d => {
+                const isDone = teethData[d] && teethData[d][num];
+                if (isDone) {
+                    row += `,O`;
+                    doneCount++;
+                } else {
+                    row += `,X`;
+                }
+            });
+            row += `,${doneCount}\n`;
+            csvContent += row;
+        });
+
+        downloadFile(`403潔牙月報表_${currentYearMonth}.csv`, csvContent);
+    }
+
+    // 📦 備份資料 (下載 JSON 檔)
+    function backupData() {
+        const dataStr = JSON.stringify(teethData, null, 2);
+        downloadFile(`403_潔牙紀錄備份_${getFormattedDate(new Date())}.json`, dataStr);
+    }
+
+    // 📥 觸發檔案上傳
+    function triggerRestore() {
+        document.getElementById('restoreFile').click();
+    }
+
+    // 📥 還原資料
+    function restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (confirm('確定要載入此備份檔嗎？這將會覆蓋當前電腦中的舊紀錄！')) {
+                    teethData = importedData;
+                    saveData();
+                    render();
+                    alert('🎉 資料還原成功！');
+                }
+            } catch (err) {
+                alert('❌ 檔案格式不正確，請選擇有效的 JSON 備份檔！');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function resetCurrentDate() {
+        if (confirm('確定要重置今日的潔牙紀錄嗎？')) {
+            teethData[currentDate] = {};
+            render();
+        }
+    }
+
+    // 初始化執行
+    initDateSelector();
+    loadData();
+    render();
+</script>
+
+</body>
+</html>
